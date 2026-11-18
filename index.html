@@ -99,9 +99,26 @@ button{font-family:inherit;cursor:pointer}
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 6px">
-<div style="font-size: 14px; font-weight: 600">Niveau</div>
+<div style="font-size: 14px; font-weight: 600">Plekken al bezet (bijv. vrienden die meespelen)</div>
+<div style="display: flex; align-items: center; gap: 12px">
+<button onClick="{{decPre}}" aria-label="Minder bezette plekken" style="width: 44px; height: 44px; border-radius: 22px; border: 1.5px solid #1E6B43; background: #FFFFFF; color: #1E6B43; font-size: 22px; font-weight: 600">−</button>
+<div style="font-size: 22px; font-weight: 700; min-width: 28px; text-align: center">{{form.pre}}</div>
+<button onClick="{{incPre}}" aria-label="Meer bezette plekken" style="width: 44px; height: 44px; border-radius: 22px; border: 1.5px solid #1E6B43; background: #FFFFFF; color: #1E6B43; font-size: 22px; font-weight: 600">+</button>
+</div>
+<div style="font-size: 12px; color: #5B625D">{{form.preHelp}}</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 14px; font-weight: 600">Zwaarte</div>
 <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
 <sc-for list="{{levelOptions}}" as="o" hint-placeholder-count="3">
+<button onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 14px; font-weight: 600">Soort spel</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{typeOptions}}" as="o" hint-placeholder-count="3">
 <button onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button>
 </sc-for>
 </div>
@@ -123,12 +140,16 @@ button{font-family:inherit;cursor:pointer}
 </div>
 <div style="font-size: 12px; color: #5B625D">{{form.modeHelp}}</div>
 </div>
-<label style="display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px">
-<input type="checkbox" checked="{{form.explain}}" onChange="{{toggleExplain}}" style="width: 22px; height: 22px; accent-color: #1E6B43">
-Ik leg het spel uit, nieuwe spelers welkom
-</label>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="font-size: 14px; font-weight: 600">Voor wie is je tafel?</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<sc-for list="{{expOptions}}" as="o" hint-placeholder-count="3">
+<button onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button>
+</sc-for>
+</div>
+</div>
 <sc-if value="{{form.noExplain}}" hint-placeholder-val="{{ false }}">
-<div style="background: #FBE3D3; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #7A3412">Er wordt geen uitleg gegeven. Bij je tafel staat dat kennis van het spel vereist is om mee te doen.</div>
+<div style="background: #FBE3D3; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #7A3412">Er wordt geen uitleg gegeven. Bij je tafel staat dat kennis van het spel vereist is, en wie aanschuift moet eerst bevestigen dat hij de regels kent.</div>
 </sc-if>
 <sc-if value="{{form.isClubGame}}" hint-placeholder-val="{{ false }}">
 <div style="background: #EEF5F0; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #154D30">Dit is een clubspel. Het wordt automatisch voor jouw tafel gereserveerd in de spellotheek.</div>
@@ -142,12 +163,33 @@ Ik leg het spel uit, nieuwe spelers welkom
 <div role="status" style="background: #DCEFE3; border-radius: 12px; padding: 12px 14px; font-size: 14px; color: #154D30"><strong>Je tafel staat erop.</strong> {{offerDoneText}}</div>
 </sc-if>
 
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div role="group" aria-label="Filter op zwaarte" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center">
+<span style="font-size: 12px; color: #5B625D; width: 56px">Zwaarte</span>
+<sc-for list="{{weightFilters}}" as="o" hint-placeholder-count="4">
+<button onClick="{{o.pick}}" aria-pressed="{{o.on}}" style="{{o.style}}">{{o.label}}</button>
+</sc-for>
+</div>
+<div role="group" aria-label="Filter op soort" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center">
+<span style="font-size: 12px; color: #5B625D; width: 56px">Soort</span>
+<sc-for list="{{typeFilters}}" as="o" hint-placeholder-count="4">
+<button onClick="{{o.pick}}" aria-pressed="{{o.on}}" style="{{o.style}}">{{o.label}}</button>
+</sc-for>
+</div>
+</div>
+<sc-if value="{{noTables}}" hint-placeholder-val="{{ false }}">
+<div style="background: #FFFFFF; border-radius: 16px; padding: 16px; border: 1px dashed #CBD2CC; display: flex; flex-direction: column; gap: 8px; align-items: flex-start">
+<div style="font-size: 14px; color: #4A544D">Geen tafels met deze filters. Bied er zelf een aan of kies andere filters.</div>
+<button onClick="{{clearFilters}}" style="min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px solid #CBD2CC; background: #FFFFFF; color: #4A544D; font-weight: 600; font-size: 13px">Filters wissen</button>
+</div>
+</sc-if>
 <sc-for list="{{tables}}" as="t" hint-placeholder-count="4">
 <article style="background: #FFFFFF; border-radius: 16px; padding: 14px 16px; border: 1px solid #E1E5DF; display: flex; flex-direction: column; gap: 10px">
 <div style="display: flex; justify-content: space-between; gap: 8px; align-items: flex-start">
 <div style="display: flex; flex-direction: column; gap: 3px">
 <div style="font-weight: 700; font-size: 16px">{{t.game}}</div>
 <div style="font-size: 13px; color: #5B625D">{{t.hostLine}}</div>
+<div style="font-size: 12px; color: #5B625D">{{t.typeLine}}</div>
 </div>
 <span style="{{t.levelStyle}}">{{t.level}}</span>
 </div>
@@ -156,8 +198,10 @@ Ik leg het spel uit, nieuwe spelers welkom
 <span style="{{s.style}}"></span>
 </sc-for>
 <span style="font-size: 13px; color: #4A544D; margin-left: 6px">{{t.seatText}}</span>
-<sc-if value="{{t.explains}}" hint-placeholder-val="{{ true }}"><span style="font-size: 12px; color: #1E6B43; margin-left: auto; font-weight: 600">Uitleg aan tafel</span></sc-if>
-<sc-if value="{{t.noExplain}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: #7A3412; margin-left: auto; font-weight: 600">Spelkennis vereist</span></sc-if>
+</div>
+<div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center">
+<span style="{{t.expStyle}}">{{t.expLabel}}</span>
+<sc-if value="{{t.looking}}" hint-placeholder-val="{{ false }}"><span style="padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #FDF3E1; color: #6B4A12">{{t.lookingText}}</span></sc-if>
 </div>
 <sc-if value="{{t.mine}}" hint-placeholder-val="{{ false }}">
 <div style="background: #F6F7F3; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px">
@@ -166,6 +210,12 @@ Ik leg het spel uit, nieuwe spelers welkom
 <span style="width: 32px; height: 32px; border-radius: 16px; background: #F2B33D; color: #1C211E; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px">K</span>
 <span style="flex: 1; font-size: 14px">Kenneth (jij) · aanbieder</span>
 </div>
+<sc-if value="{{t.hasPre}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 10px; min-height: 36px">
+<span style="width: 32px; height: 32px; border-radius: 16px; background: #CFE3D6; color: #154D30; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px">+{{t.pre}}</span>
+<span style="flex: 1; font-size: 14px">{{t.preText}}</span>
+</div>
+</sc-if>
 <sc-for list="{{t.seated}}" as="p" hint-placeholder-count="2">
 <div style="display: flex; align-items: center; gap: 10px">
 <span style="width: 32px; height: 32px; border-radius: 16px; background: #1E6B43; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px">{{p.initial}}</span>
@@ -192,7 +242,31 @@ Ik leg het spel uit, nieuwe spelers welkom
 </sc-if>
 </div>
 </sc-if>
+<sc-if value="{{t.askRules}}" hint-placeholder-val="{{ false }}">
+<div role="alertdialog" aria-label="Ken je de regels al?" style="background: #FDF3E1; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+<div style="font-weight: 700; font-size: 15px; color: #1C211E">Ken je de regels al?</div>
+<div style="font-size: 13px; color: #6B4A12">Aan deze kennerstafel wordt geen uitleg gegeven. Je schuift aan als je het spel al eens gespeeld hebt.</div>
+<div style="display: flex; gap: 8px">
+<button onClick="{{t.rulesNo}}" style="flex: 1; min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px solid #CBD2CC; background: #FFFFFF; color: #4A544D; font-weight: 600; font-size: 13px">Nee, nog niet</button>
+<button onClick="{{t.rulesYes}}" style="flex: 1; min-height: 44px; padding: 0 12px; border-radius: 12px; border: 0; background: #1E6B43; color: #FFFFFF; font-weight: 600; font-size: 13px">Ja, ik ken ze</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{t.hasConflict}}" hint-placeholder-val="{{ false }}">
+<div role="alertdialog" aria-label="Overlap met een andere tafel" style="background: #FBE3D3; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px">
+<div style="font-weight: 700; font-size: 15px; color: #1C211E">Dit overlapt met een andere tafel</div>
+<div style="font-size: 13px; color: #7A3412">{{t.conflictText}}</div>
+<div style="display: flex; gap: 8px">
+<button onClick="{{t.conflictNo}}" style="flex: 1; min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px solid #CBD2CC; background: #FFFFFF; color: #4A544D; font-weight: 600; font-size: 13px">Annuleren</button>
+<sc-if value="{{t.canSwitch}}" hint-placeholder-val="{{ true }}">
+<button onClick="{{t.conflictSwitch}}" style="flex: 1; min-height: 44px; padding: 0 12px; border-radius: 12px; border: 0; background: #1E6B43; color: #FFFFFF; font-weight: 600; font-size: 13px">Wissel naar deze tafel</button>
+</sc-if>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{t.showBtn}}" hint-placeholder-val="{{ true }}">
 <button onClick="{{t.toggle}}" style="{{t.btnStyle}}">{{t.btnLabel}}</button>
+</sc-if>
 </article>
 </sc-for>
 </sc-if>
@@ -239,7 +313,59 @@ Ik leg het spel uit, nieuwe spelers welkom
 <div style="font-weight: 700; font-size: 16px">{{e.title}}</div>
 <div style="font-size: 13px; color: #5B625D">{{e.place}}</div>
 <div style="font-size: 13px; color: #4A544D">{{e.countText}}</div>
+<sc-if value="{{e.simple}}" hint-placeholder-val="{{ true }}">
 <button onClick="{{e.toggle}}" style="{{e.btnStyle}}">{{e.btnLabel}}</button>
+</sc-if>
+<sc-if value="{{e.reqNone}}" hint-placeholder-val="{{ false }}">
+<div style="font-size: 12px; color: #5B625D">Thuisavond: de gastheer keurt aanvragen goed. Het adres zie je pas na akkoord.</div>
+<button onClick="{{e.sendReq}}" style="{{e.btnStyle}}">Aanvraag sturen</button>
+</sc-if>
+<sc-if value="{{e.reqPending}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="background: #E3E8F7; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #26386B">Aanvraag verstuurd naar {{e.host}}. Je krijgt een melding zodra {{e.host}} reageert, en dan zie je ook het adres.</div>
+<div style="display: flex; gap: 6px; flex-wrap: wrap">
+<button onClick="{{e.cancelReq}}" style="min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px solid #CBD2CC; background: #FFFFFF; color: #4A544D; font-weight: 600; font-size: 13px">Aanvraag intrekken</button>
+<button onClick="{{e.simAccept}}" style="min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px dashed #1E6B43; background: #FFFFFF; color: #1E6B43; font-weight: 600; font-size: 13px">Demo: {{e.host}} accepteert</button>
+<button onClick="{{e.simFull}}" style="min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px dashed #CBD2CC; background: #FFFFFF; color: #4A544D; font-weight: 600; font-size: 13px">Demo: avond raakt vol</button>
+</div>
+</sc-if>
+<sc-if value="{{e.reqOk}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="background: #DCEFE3; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #154D30"><strong>Je bent erbij.</strong> {{e.host}} heeft je aanvraag geaccepteerd. Het adres staat hierboven.</div>
+<button onClick="{{e.cancelReq}}" style="{{e.offStyle}}">Afmelden</button>
+</sc-if>
+<sc-if value="{{e.reqNo}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="background: #EDEDED; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #3F4541">Deze avond is helaas vol. Je krijgt een melding als er een nieuwe thuisavond is.</div>
+<button onClick="{{e.cancelReq}}" style="align-self: flex-start; min-height: 32px; padding: 0; border: 0; background: transparent; color: #4A544D; font-size: 13px; text-decoration: underline">Demo opnieuw</button>
+</sc-if>
+<sc-if value="{{e.isHost}}" hint-placeholder-val="{{ false }}">
+<div style="background: #F6F7F3; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-top: 4px">
+<label style="display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px">
+<input type="checkbox" checked="{{hostAuto}}" onChange="{{toggleHostAuto}}" style="width: 22px; height: 22px; accent-color: #1E6B43">
+Vaste spelers direct goedkeuren
+</label>
+<div style="font-size: 13px; font-weight: 700">Gasten ({{hostGuestCount}} van {{hostSeats}})</div>
+<sc-for list="{{hostGuests}}" as="g" hint-placeholder-count="1">
+<div style="display: flex; align-items: center; gap: 10px; min-height: 36px">
+<span style="width: 32px; height: 32px; border-radius: 16px; background: #1E6B43; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px">{{g.initial}}</span>
+<span style="flex: 1; font-size: 14px">{{g.name}}</span>
+</div>
+</sc-for>
+<sc-if value="{{hostHasReq}}" hint-placeholder-val="{{ true }}">
+<div style="font-size: 13px; font-weight: 700; margin-top: 4px">Aanvragen</div>
+<sc-for list="{{hostRequests}}" as="r" hint-placeholder-count="2">
+<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap">
+<span style="width: 32px; height: 32px; border-radius: 16px; background: #E3E8F7; color: #26386B; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px">{{r.initial}}</span>
+<span style="flex: 1; font-size: 14px; min-width: 80px">{{r.name}}</span>
+<button onClick="{{r.decline}}" style="min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px solid #CBD2CC; background: #FFFFFF; color: #4A544D; font-weight: 600; font-size: 13px">Niet deze keer</button>
+<button onClick="{{r.accept}}" style="min-height: 44px; padding: 0 12px; border-radius: 12px; border: 0; background: #1E6B43; color: #FFFFFF; font-weight: 600; font-size: 13px">Accepteren</button>
+</div>
+</sc-for>
+</sc-if>
+<sc-if value="{{hostHasToast}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="background: #DCEFE3; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #154D30">{{hostToast}}</div>
+</sc-if>
+<div style="font-size: 12px; color: #5B625D">Wie je niet uitnodigt, ziet alleen "Deze avond is helaas vol". Open aanvragen vervallen vanzelf als je avond vol is of begint.</div>
+</div>
+</sc-if>
 </div>
 </article>
 </sc-for>
@@ -464,9 +590,9 @@ function build(n,sc){
  if(n.nodeType===3){var t=n.nodeValue;return t.indexOf('{{')<0?t:interp(t,sc);}
  if(n.nodeType!==1)return null;
  var tag=n.tagName.toLowerCase();
- if(tag==='sc-if'){var m=(n.getAttribute('value')||'').match(WHOLE);var v=m?look(m[1],sc):n.getAttribute('value');return v?kids(n,sc):null;}
+ if(tag==='sc-if'){var m=(n.getAttribute('value')||'').match(WHOLE);var v=m?look(m[1],sc):n.getAttribute('value');return h('sc-wrap',{style:'display: contents'},v?kids(n,sc):null);}
  if(tag==='sc-for'){var m2=(n.getAttribute('list')||'').match(WHOLE);var list=m2?look(m2[1],sc):[];var as=n.getAttribute('as')||'item';var out=[];
-  (list||[]).forEach(function(it,ix){var s=Object.create(sc);s[as]=it;s.$index=ix;out.push.apply(out,kids(n,s));});return out;}
+  (list||[]).forEach(function(it,ix){var s=Object.create(sc);s[as]=it;s.$index=ix;out.push(h('sc-wrap',{key:ix,style:'display: contents'},kids(n,s)));});return h('sc-wrap',{style:'display: contents'},out);}
  var props={};var isText=tag==='input'&&!/^(checkbox|radio)$/i.test(n.getAttribute('type')||'');
  for(var a=0;a<n.attributes.length;a++){var at=n.attributes[a];var name=at.name;var val=at.value;
   if(name.indexOf('hint-')===0)continue;
@@ -484,7 +610,7 @@ window.__dcBuild=build;
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { tab: 'avond', joined: {}, reserved: {}, rsvp: {}, bgg: false, listing: null, buy: {}, chat: false, sent: {}, bidOpen: false, bidAmt: '', bids: {}, offerOpen: false, myTable: null, form: { game: '', max: 4, level: 'Medium', time: '20:00', explain: true, mode: 'open' }, toast: '' };
+    this.state = { tab: 'avond', joined: {}, reserved: {}, rsvp: {}, bgg: false, listing: null, buy: {}, chat: false, sent: {}, bidOpen: false, bidAmt: '', bids: {}, offerOpen: false, myTable: null, form: { game: '', max: 4, pre: 0, level: 'Middel', type: 'Strategie', exp: 'Beginner', time: '20:00', explain: true, mode: 'open' }, toast: '', fWeight: 'Alles', fType: 'Alles', rulesAsk: null, conflict: null, homeReq: null, host: { guests: ['Eva'], requests: ['Lotte', 'Mehmet', 'Sanne'], auto: false, toast: '' } };
   }
   renderVals() {
     var self = this;
@@ -502,13 +628,41 @@ class Component extends DCLogic {
     function primary(on) {
       return 'min-height: 44px; border-radius: 12px; font-weight: 600; font-size: 15px; ' + (on ? 'background: #FFFFFF; color: ' + green + '; border: 1.5px solid ' + green : 'background: ' + green + '; color: #FFFFFF; border: 1.5px solid ' + green);
     }
-    var levelColors = { Licht: ['#DCEFE3', '#154D30'], Medium: ['#E3E8F7', '#26386B'], Expert: ['#FBE3D3', '#7A3412'] };
+    var levelColors = { Licht: ['#DCEFE3', '#154D30'], Middel: ['#E3E8F7', '#26386B'], Zwaar: ['#FBE3D3', '#7A3412'] };
+    var expInfo = { Beginner: ['Beginner welkom · uitleg', '#DCEFE3', '#154D30'], Ervaren: ['Ervaren spelers', '#E3E8F7', '#26386B'], Kenner: ['Kenner · regels kennen', '#FBE3D3', '#7A3412'] };
+    function expStyle(e) { var x = expInfo[e]; return 'padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: ' + x[1] + '; color: ' + x[2]; }
+    function toMin(t) { var p = t.split(':'); return parseInt(p[0], 10) * 60 + parseInt(p[1], 10); }
+    function fmt(m) { var h = Math.floor(m / 60) % 24, mm = m % 60; return h + ':' + (mm < 10 ? '0' : '') + mm; }
+    function iv(t) { var s0 = toMin(t.time); return { s: s0, e: s0 + (t.dur || 120) }; }
+    function durText(d) { return d >= 60 ? 'ca. ' + (d % 60 ? (d / 60).toFixed(1).replace('.', ',') : d / 60) + ' uur' : 'ca. ' + d + ' min'; }
     var rawTables = [
-      { id: 't1', game: 'Nemesis: Retaliation', host: 'Sanne', time: '20:00', level: 'Expert', taken: 2, max: 4, explains: true, request: true },
-      { id: 't2', game: 'Century: Spice Road', host: 'Joris', time: '20:00', level: 'Licht', taken: 2, max: 5, explains: true },
-      { id: 't3', game: 'Brass: Birmingham', host: 'Eva', time: '20:15', level: 'Expert', taken: 4, max: 4, explains: false },
-      { id: 't4', game: 'Harmonies', host: 'Ruud', time: '21:30', level: 'Licht', taken: 1, max: 4, explains: true }
+      { id: 't1', game: 'Nemesis: Retaliation', host: 'Sanne', time: '20:00', dur: 180, level: 'Zwaar', type: 'Coöp', exp: 'Ervaren', taken: 2, max: 4, request: true },
+      { id: 't2', game: 'Century: Spice Road', host: 'Joris', time: '20:00', dur: 45, level: 'Licht', type: 'Strategie', exp: 'Beginner', taken: 2, max: 5 },
+      { id: 't3', game: 'Brass: Birmingham', host: 'Eva', time: '20:15', dur: 150, level: 'Zwaar', type: 'Strategie', exp: 'Kenner', taken: 3, max: 4 },
+      { id: 't6', game: 'Ark Nova', host: 'Bram', time: '20:00', dur: 150, level: 'Zwaar', type: 'Strategie', exp: 'Ervaren', taken: 4, max: 4 },
+      { id: 't5', game: 'Just One', host: 'Iris', time: '21:00', dur: 30, level: 'Licht', type: 'Party', exp: 'Beginner', taken: 3, max: 7 },
+      { id: 't4', game: 'Harmonies', host: 'Ruud', time: '21:30', dur: 45, level: 'Licht', type: 'Strategie', exp: 'Beginner', taken: 3, max: 4, group: 'Ruud en 2 vrienden' }
     ];
+    var baseTables = rawTables;
+    function conflictsFor(t) {
+      var out = [];
+      baseTables.forEach(function (o) { if (o.id !== t.id && st.joined[o.id] && o.taken < o.max) { var a = iv(t), b = iv(o); if (a.s < b.e && b.s < a.e) out.push(o); } });
+      if (st.myTable) { var a2 = iv(t), b2 = iv(st.myTable); if (a2.s < b2.e && b2.s < a2.e) out.push({ id: 'mine', game: st.myTable.game, time: st.myTable.time, dur: 120, mine: true }); }
+      return out;
+    }
+    function doJoin(t, leave) {
+      var m = Object.assign({}, st.joined);
+      (leave || []).forEach(function (o) { m[o.id] = false; });
+      m[t.id] = true;
+      self.setState({ joined: m, rulesAsk: null, conflict: null });
+    }
+    function tryJoin(t, rulesOk) {
+      if (st.joined[t.id]) { var m = Object.assign({}, st.joined); m[t.id] = false; self.setState({ joined: m }); return; }
+      if (t.taken >= t.max) { doJoin(t); return; }
+      if (t.exp === 'Kenner' && !rulesOk) { self.setState({ rulesAsk: t.id, conflict: null }); return; }
+      if (conflictsFor(t).length) { self.setState({ conflict: t.id, rulesAsk: null }); return; }
+      doJoin(t);
+    }
     if (st.myTable) rawTables = [st.myTable].concat(rawTables);
     var free = 0;
     var tables = rawTables.map(function (t) {
@@ -517,7 +671,7 @@ class Component extends DCLogic {
         for (var k = 0; k < t.max; k++) mseats.push({ style: 'width: 18px; height: 18px; border-radius: 9px; background: ' + (k === 0 ? '#F2B33D' : '#FFFFFF') + '; border: 2px solid ' + (k === 0 ? '#C98A12' : green) + '; box-sizing: border-box' });
         var mt = st.myTable;
         function upd(patch, toast) { self.setState({ myTable: Object.assign({}, st.myTable, patch), toast: toast }); }
-        var nSeated = mt.seated.length;
+        var nSeated = (mt.pre || 0) + mt.seated.length;
         mseats = [];
         for (var q = 0; q < t.max; q++) mseats.push({ style: 'width: 18px; height: 18px; border-radius: 9px; background: ' + (q === 0 ? '#F2B33D' : (q <= nSeated ? green : '#FFFFFF')) + '; border: 2px solid ' + (q === 0 ? '#C98A12' : green) + '; box-sizing: border-box' });
         var mfree = t.max - 1 - nSeated;
@@ -539,7 +693,7 @@ class Component extends DCLogic {
         var reqList = mt.requests.map(function (n) {
           return { name: n, initial: n.charAt(0),
             accept: function () {
-              if (mt.seated.length >= t.max - 1) { upd({}, 'Je tafel is vol. Verwijder eerst een speler.'); return; }
+              if ((mt.pre || 0) + mt.seated.length >= t.max - 1) { upd({}, 'Je tafel is vol. Verwijder eerst een speler.'); return; }
               upd({ seated: mt.seated.concat([n]), requests: mt.requests.filter(function (x) { return x !== n; }) }, n + ' zit aan je tafel en krijgt een bevestiging.');
             },
             decline: function () {
@@ -548,7 +702,10 @@ class Component extends DCLogic {
         });
         var mlc = levelColors[t.level];
         return {
-          game: t.game, hostLine: 'Jouw tafel · ' + t.time + (t.mode === 'aanvraag' ? ' · op aanvraag' : ''), time: t.time, level: t.level, explains: t.explain, noExplain: !t.explain, seats: mseats,
+          game: t.game, hostLine: 'Jouw tafel · ' + t.time + (t.mode === 'aanvraag' ? ' · op aanvraag' : ''), typeLine: t.type + ' · ' + durText(120), time: t.time, level: t.level, explains: t.explain, noExplain: !t.explain, seats: mseats,
+          expLabel: expInfo[t.exp][0], expStyle: expStyle(t.exp), looking: mfree > 0 && (mt.pre || 0) > 0, lookingText: 'Zoekt nog ' + mfree + (mfree === 1 ? ' speler' : ' spelers'),
+          hasPre: (mt.pre || 0) > 0, pre: mt.pre || 0, preText: 'Eigen groep · ' + (mt.pre === 1 ? '1 plek' : mt.pre + ' plekken') + ' al bezet',
+          askRules: false, hasConflict: false, showBtn: true, wtype: t.type, wlevel: t.level,
           seatText: mfree <= 0 ? 'Vol' + (mt.waitlist.length ? ' · ' + mt.waitlist.length + ' op wachtlijst' : '') : mfree + (mfree === 1 ? ' plek vrij' : ' plekken vrij'),
           mine: true, modeLabel: t.mode === 'aanvraag' ? 'op aanvraag' : 'open tafel',
           seated: seatedList, requests: reqList, hasRequests: reqList.length > 0,
@@ -574,13 +731,28 @@ class Component extends DCLogic {
       if (full) { label = me ? 'Van wachtlijst af' : 'Op wachtlijst'; seatText = me ? 'Vol · jij staat op de wachtlijst' : 'Vol'; }
       else if (t.request) { label = me ? 'Aanvraag intrekken' : 'Aanvragen'; seatText = me ? 'Aanvraag verstuurd naar ' + t.host : (t.max - taken) + ' plekken vrij'; }
       else { label = me ? 'Afmelden' : 'Aanschuiven'; seatText = (t.max - taken) === 0 ? 'Nu vol' : (t.max - taken) + (t.max - taken === 1 ? ' plek vrij' : ' plekken vrij'); }
+      var conf = st.conflict === t.id ? conflictsFor(t) : [];
+      var hasMine = conf.some(function (o) { return o.mine; });
+      var confText = conf.map(function (o) { var r = iv(o); return (o.mine ? 'Je bent zelf aanbieder van ' : 'Je zit al aan ') + o.game + ' (' + fmt(r.s) + ' tot ' + fmt(r.e) + ')'; }).join('. ') + '. ' + (hasMine ? 'Annuleer eerst je eigen tafel als je hier wilt meespelen.' : 'Wissel je, dan krijgt de andere tafel een neutrale melding en komt je plek vrij.');
+      var free1 = t.max - taken;
       return {
-        game: t.game, hostLine: 'Tafel van ' + t.host + ' · ' + t.time + (t.request ? ' · op aanvraag' : ''), time: t.time, level: t.level, explains: t.explains, noExplain: !t.explains, seats: seats, seatText: seatText,
+        game: t.game, hostLine: 'Tafel van ' + t.host + ' · ' + t.time + (t.request ? ' · op aanvraag' : ''), typeLine: t.type + ' · ' + durText(t.dur) + ' · tot ' + fmt(iv(t).e), time: t.time, level: t.level, explains: t.exp !== 'Kenner', noExplain: t.exp === 'Kenner', seats: seats, seatText: seatText,
+        expLabel: expInfo[t.exp][0], expStyle: expStyle(t.exp), looking: !!t.group && free1 > 0 && !me, lookingText: (t.group || '') + ' zoeken nog ' + free1 + (free1 === 1 ? ' speler' : ' spelers'),
+        hasPre: false, pre: 0, preText: '',
+        askRules: st.rulesAsk === t.id, rulesYes: function () { tryJoin(t, true); }, rulesNo: function () { self.setState({ rulesAsk: null }); },
+        hasConflict: conf.length > 0, conflictText: confText, canSwitch: !hasMine,
+        conflictNo: function () { self.setState({ conflict: null }); }, conflictSwitch: function () { doJoin(t, conf); },
+        showBtn: st.rulesAsk !== t.id && conf.length === 0, wtype: t.type, wlevel: t.level,
         mine: false, seated: [], requests: [], hasRequests: false, hasWait: false, waitText: '', hasToast: false, toast: '', modeLabel: '',
         levelStyle: 'flex: none; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: ' + lc[0] + '; color: ' + lc[1],
-        btnLabel: label, btnStyle: primary(me), toggle: flip('joined', t.id)
+        btnLabel: label, btnStyle: primary(me), toggle: function () { tryJoin(t, false); }
       };
     });
+    var fW = st.fWeight || 'Alles', fT = st.fType || 'Alles';
+    tables = tables.filter(function (t) { return t.mine || ((fW === 'Alles' || t.wlevel === fW) && (fT === 'Alles' || t.wtype === fT)); });
+    function fchip(on) { return 'min-height: 36px; padding: 0 12px; border-radius: 18px; font-size: 13px; font-weight: 600; ' + (on ? 'background: ' + green + '; color: #FFFFFF; border: 1.5px solid ' + green : 'background: #FFFFFF; color: #1C211E; border: 1.5px solid #CBD2CC'); }
+    var weightFilters = ['Alles', 'Licht', 'Middel', 'Zwaar'].map(function (w) { return { label: w, on: fW === w, style: fchip(fW === w), pick: function () { self.setState({ fWeight: w }); } }; });
+    var typeFilters = ['Alles', 'Coöp', 'Party', 'Strategie'].map(function (w) { return { label: w, on: fT === w, style: fchip(fT === w), pick: function () { self.setState({ fType: w }); } }; });
     var addr = encodeURIComponent("'t Aahoes, Albardastraat 20, Aadorp");
     var ua = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
     var mapsDefault = /iPhone|iPad|iPod|Macintosh/.test(ua) ? 'https://maps.apple.com/?daddr=' + addr : (/Android/.test(ua) ? 'geo:0,0?q=' + addr : 'https://www.google.com/maps/dir/?api=1&destination=' + addr);
@@ -595,11 +767,14 @@ class Component extends DCLogic {
       { label: 'Terraforming Mars (club)', game: 'Terraforming Mars' }
     ];
     var gameSuggestions = sugg.map(function (s) { return { label: s.label, style: chip(f.game === s.game), pick: function () { setForm({ game: s.game }); } }; });
-    var levelOptions = ['Licht', 'Medium', 'Expert'].map(function (l) { return { label: l, style: chip(f.level === l), pick: function () { setForm({ level: l }); } }; });
+    var typeOptions = ['Coöp', 'Party', 'Strategie'].map(function (l) { return { label: l, style: chip(f.type === l), pick: function () { setForm({ type: l }); } }; });
+    var expOptions = [{ id: 'Beginner', label: 'Beginner welkom, ik leg uit' }, { id: 'Ervaren', label: 'Ervaren spelers' }, { id: 'Kenner', label: 'Kenners, regels kennen vereist' }].map(function (o) { return { label: o.label, style: chip(f.exp === o.id) + '; text-align: left', pick: function () { setForm({ exp: o.id, explain: o.id !== 'Kenner' }); } }; });
+    var levelOptions = ['Licht', 'Middel', 'Zwaar'].map(function (l) { return { label: l, style: chip(f.level === l), pick: function () { setForm({ level: l }); } }; });
     var timeOptions = ['20:00', '20:30', '21:30'].map(function (t) { return { label: t, style: chip(f.time === t), pick: function () { setForm({ time: t }); } }; });
     var formInvalid = !f.game || !String(f.game).trim();
     var modeOptions = [{ id: 'open', label: 'Open tafel' }, { id: 'aanvraag', label: 'Op aanvraag' }].map(function (m) { return { label: m.label, style: chip(f.mode === m.id), pick: function () { setForm({ mode: m.id }); } }; });
-    var formVals = { game: f.game, max: f.max, explain: f.explain, noExplain: !f.explain, modeHelp: f.mode === 'open' ? 'Iedereen kan direct aanschuiven zolang er plek is. Jij kunt spelers later nog verwijderen.' : 'Spelers vragen een plek aan en jij accepteert of weigert. Een weigering krijgt een neutrale melding, zonder reden.', invalid: formInvalid, isClubGame: clubGames.indexOf(f.game) >= 0 };
+    var stillFree = f.max - 1 - (f.pre || 0);
+    var formVals = { game: f.game, max: f.max, pre: f.pre || 0, preHelp: (f.pre ? 'Je zoekt nog ' + stillFree + (stillFree === 1 ? ' speler' : ' spelers') + '. Dat staat bij je tafel.' : 'Speel je al met vrienden? Zet hier hoeveel plekken al bezet zijn, dan staat er "zoekt nog X spelers".'), explain: f.exp !== 'Kenner', noExplain: f.exp === 'Kenner', modeHelp: f.mode === 'open' ? 'Iedereen kan direct aanschuiven zolang er plek is. Jij kunt spelers later nog verwijderen.' : 'Spelers vragen een plek aan en jij accepteert of weigert. Een weigering krijgt een neutrale melding, zonder reden.', invalid: formInvalid, isClubGame: clubGames.indexOf(f.game) >= 0 };
     var covers = ['#1E6B43', '#2F5D8A', '#9A4A1C', '#6B4A8A', '#3E7A6E'];
     var rawLib = [
       { id: 'g1', name: 'Azul', meta: '2-4 spelers · 40 min · familie', lent: false },
@@ -632,21 +807,60 @@ class Component extends DCLogic {
     });
     var rawEvents = [
       { id: 'e1', month: 'nov', day: '20', kind: 'Spelavond', title: 'Groene Pion spelavond', place: "'t Aahoes, Aadorp · 20:00", going: 41, max: 0 },
-      { id: 'e2', month: 'nov', day: '27', kind: 'Spellenavond thuis', title: 'Expertspellen in Almelo', place: 'Almelo · adres zie je na aanmelden', going: 3, max: 4 },
+      { id: 'e2', month: 'nov', day: '27', kind: 'Spellenavond thuis · op aanvraag', title: 'Expertspellen bij Joris', place: 'Almelo-Noord · 19:30 · Brass: Birmingham', host: 'Joris', home: true, going: 2, max: 4 },
+      { id: 'e5', month: 'nov', day: '28', kind: 'Jouw spellenavond thuis', title: 'Coöp-avond bij Kenneth', place: 'Jouw adres · 19:30 · Spirit Island', hostMe: true, going: 0, max: 3 },
       { id: 'e3', month: 'dec', day: '4', kind: 'Weerwolven', title: 'Weerwolven van Wakkerdam', place: 'Enschede', going: 14, max: 18 },
       { id: 'e4', month: 'dec', day: '11', kind: 'Uitje', title: 'Samen naar een spellenbeurs', place: '[LOCATIE]', going: 6, max: 0 }
     ];
     var goingCount = 41 + (st.rsvp.e1 ? 1 : 0);
+    var hs = st.host;
+    function setHost(patch) { self.setState({ host: Object.assign({}, st.host, patch) }); }
+    var regulars = ['Sanne'];
+    var hostGuests = hs.guests.map(function (n) { return { name: n + (regulars.indexOf(n) >= 0 ? ' · vaste speler' : ''), initial: n.charAt(0) }; });
+    var hostRequests = hs.requests.map(function (n) {
+      return { name: n + (regulars.indexOf(n) >= 0 ? ' · vaste speler' : ''), initial: n.charAt(0),
+        accept: function () {
+          var g = hs.guests.concat([n]); var r = hs.requests.filter(function (x) { return x !== n; });
+          var msg = n + ' is erbij en ziet nu je adres.';
+          if (g.length >= 3 && r.length) { var one = r.length === 1; msg += ' Je avond is vol, dus ' + (one ? 'de open aanvraag van ' : 'de open aanvragen van ') + r.join(' en ') + (one ? ' is vervallen. Die krijgt' : ' zijn vervallen. Zij krijgen') + ' de melding "Deze avond is helaas vol".'; r = []; }
+          setHost({ guests: g, requests: r, toast: msg });
+        },
+        decline: function () { setHost({ requests: hs.requests.filter(function (x) { return x !== n; }), toast: n + ' ziet alleen "Deze avond is helaas vol". Je adres blijft verborgen.' }); } };
+    });
+    var hostVals = {
+      hostAuto: !!hs.auto, hostGuests: hostGuests, hostRequests: hostRequests, hostHasReq: hostRequests.length > 0, hostGuestCount: hs.guests.length, hostSeats: 3,
+      hostHasToast: !!hs.toast, hostToast: hs.toast,
+      toggleHostAuto: function () {
+        if (hs.auto) { setHost({ auto: false, toast: '' }); return; }
+        var auto = hs.requests.filter(function (n) { return regulars.indexOf(n) >= 0; });
+        if (auto.length && hs.guests.length < 3) setHost({ auto: true, guests: hs.guests.concat(auto), requests: hs.requests.filter(function (n) { return regulars.indexOf(n) < 0; }), toast: auto.join(' en ') + ' is vaste speler en direct goedgekeurd.' });
+        else setHost({ auto: true, toast: 'Vaste spelers worden voortaan direct goedgekeurd.' });
+      }
+    };
     var events = rawEvents.map(function (e) {
       var me = !!st.rsvp[e.id];
+      if (e.home) {
+        var hr = st.homeReq;
+        var cnt = e.going + (hr === 'ok' ? 1 : 0);
+        function setReq(v) { return function () { self.setState({ homeReq: v }); }; }
+        return { month: e.month, day: e.day, kind: e.kind, title: e.title, place: hr === 'ok' ? 'Voorbeeldstraat 12, Almelo · 19:30 · Brass: Birmingham' : e.place, countText: cnt + ' van ' + e.max + ' plekken bezet',
+          simple: false, isHost: false, reqNone: !hr, reqPending: hr === 'req', reqOk: hr === 'ok', reqNo: hr === 'no', host: e.host,
+          btnStyle: primary(false) + '; margin-top: 6px; align-self: flex-start; padding: 0 18px', offStyle: primary(true) + '; margin-top: 6px; align-self: flex-start; padding: 0 18px',
+          sendReq: setReq('req'), cancelReq: setReq(null), simAccept: setReq('ok'), simFull: setReq('no') };
+      }
+      if (e.hostMe) {
+        return { month: e.month, day: e.day, kind: e.kind, title: e.title, place: e.place, countText: 'Gasten zien alleen datum, wijk en spel tot jij akkoord geeft.',
+          simple: false, isHost: true, reqNone: false, reqPending: false, reqOk: false, reqNo: false, host: 'Kenneth' };
+      }
       var n = e.going + (me ? 1 : 0);
       var full = e.max > 0 && e.going >= e.max;
       var countText = e.max > 0 ? (n + ' van ' + e.max + ' aangemeld' + (e.max - n === 1 ? ' · laatste plek' : '')) : (n + ' aangemeld');
       if (full && me) countText = 'Vol · jij staat op de wachtlijst';
       return {
-        month: e.month, day: e.day, kind: e.kind, title: e.title, place: (me && e.id === 'e2') ? 'Voorbeeldstraat 12, Almelo' : e.place, countText: countText,
+        month: e.month, day: e.day, kind: e.kind, title: e.title, place: e.place, countText: countText,
         btnLabel: me ? 'Afmelden' : (full ? 'Op wachtlijst' : 'Ik kom'),
         btnStyle: primary(me) + '; margin-top: 6px; align-self: flex-start; padding: 0 18px',
+        simple: true, isHost: false, reqNone: false, reqPending: false, reqOk: false, reqNo: false, host: '',
         toggle: flip('rsvp', e.id)
       };
     });
@@ -719,16 +933,20 @@ class Component extends DCLogic {
       offerDoneText: st.myTable ? st.myTable.game + ' om ' + st.myTable.time + ' staat bovenaan. Voor de demo zijn er alvast spelers aangeschoven.' : '',
       openOffer: function () { self.setState({ offerOpen: true }); },
       closeOffer: function () { self.setState({ offerOpen: false }); },
-      form: formVals, modeOptions: modeOptions, gameSuggestions: gameSuggestions, levelOptions: levelOptions, timeOptions: timeOptions,
+      form: formVals, modeOptions: modeOptions, gameSuggestions: gameSuggestions, levelOptions: levelOptions, timeOptions: timeOptions, typeOptions: typeOptions, expOptions: expOptions,
+      weightFilters: weightFilters, typeFilters: typeFilters, noTables: tables.length === 0, clearFilters: function () { self.setState({ fWeight: 'Alles', fType: 'Alles' }); },
+      decPre: function () { setForm({ pre: Math.max(0, (f.pre || 0) - 1) }); },
+      incPre: function () { setForm({ pre: Math.min(f.max - 2, (f.pre || 0) + 1) }); },
       setGame: function (e) { setForm({ game: e.target.value }); },
-      decMax: function () { setForm({ max: Math.max(2, f.max - 1) }); },
+      decMax: function () { var nm = Math.max(2, f.max - 1); setForm({ max: nm, pre: Math.min(f.pre || 0, nm - 2) }); },
       incMax: function () { setForm({ max: Math.min(8, f.max + 1) }); },
       toggleExplain: function () { setForm({ explain: !f.explain }); },
       submitStyle: 'min-height: 48px; border-radius: 12px; font-weight: 600; font-size: 16px; border: 0; ' + (formInvalid ? 'background: #CBD2CC; color: #4A544D' : 'background: ' + green + '; color: #FFFFFF'),
       submitOffer: function () { if (formInvalid) return; var pool = ['Joris', 'Lotte', 'Bram', 'Fenna', 'Daan', 'Iris', 'Sem'];
         var open = f.mode === 'open';
-        self.setState({ offerOpen: false, toast: '', myTable: { id: 'mine', mine: true, game: f.game, time: f.time, level: f.level, max: f.max, explain: f.explain, mode: f.mode,
-          seated: open ? pool.slice(0, f.max - 1) : ['Joris'], requests: open ? [] : ['Lotte', 'Bram'], waitlist: open ? ['Mila'] : ['Mila'] } }); },
+        var pre = f.pre || 0; var room = f.max - 1 - pre;
+        self.setState({ offerOpen: false, toast: '', myTable: { id: 'mine', mine: true, game: f.game, time: f.time, level: f.level, type: f.type, exp: f.exp, max: f.max, pre: pre, explain: f.exp !== 'Kenner', mode: f.mode,
+          seated: open ? pool.slice(0, pre ? Math.max(0, room - 1) : room) : (room > 1 ? ['Joris'] : []), requests: open ? [] : ['Lotte', 'Bram'], waitlist: ['Mila'] } }); },
       closeListing: function () { self.setState({ listing: null, chat: false, removeOpen: false }); },
       buyNone: !st.buy[di], buyPending: st.buy[di] === 'req' || st.buy[di] === 'bid', buyAccepted: st.buy[di] === 'ok',
       bidClosed: !st.bidOpen, bidFormOpen: st.bidOpen,
@@ -746,6 +964,7 @@ class Component extends DCLogic {
       closeWarn: function () { self.setState({ chat: false }); },
       tabAvond: tabStyle('avond'), tabSpellen: tabStyle('spellen'), tabAgenda: tabStyle('agenda'), tabKoop: tabStyle('koop'), tabProfiel: tabStyle('profiel'),
       goAvond: go('avond'), goSpellen: go('spellen'), goAgenda: go('agenda'), goKoop: go('koop'), goProfiel: go('profiel'),
+      hostAuto: hostVals.hostAuto, hostGuests: hostVals.hostGuests, hostRequests: hostVals.hostRequests, hostHasReq: hostVals.hostHasReq, hostGuestCount: hostVals.hostGuestCount, hostSeats: hostVals.hostSeats, hostHasToast: hostVals.hostHasToast, hostToast: hostVals.hostToast, toggleHostAuto: hostVals.toggleHostAuto,
       tables: tables, freeSeats: free, goingCount: goingCount, library: library, events: events, listings: listings,
       bggBadge: st.bgg ? 'Gekoppeld' : 'Niet gekoppeld',
       bggBadgeStyle: 'padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; ' + (st.bgg ? 'background: #DCEFE3; color: #154D30' : 'background: #EDEDED; color: #4A544D'),
